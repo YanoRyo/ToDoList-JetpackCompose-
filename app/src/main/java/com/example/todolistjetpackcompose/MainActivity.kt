@@ -12,6 +12,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.todolistjetpackcompose.components.EditDialog
 import com.example.todolistjetpackcompose.ui.theme.ToDoListJetpackComposeTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -35,15 +36,12 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun MainContent() {
-    val isShowDialog = remember {
-        mutableStateOf(false)
-    }
-    if (isShowDialog.value) {
-        EditDialog(isShowDialog)
+fun MainContent(viewModel: MainViewModel = hiltViewModel()) {
+    if (viewModel.isShowDialog) {
+        EditDialog()
     }
     Scaffold(floatingActionButton = {
-        FloatingActionButton(onClick = { isShowDialog.value = true }) {
+        FloatingActionButton(onClick = { viewModel.isShowDialog = true }) {
             Icon(imageVector = Icons.Default.Add, contentDescription = "新規作成")
         }
     }) {
