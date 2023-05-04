@@ -17,6 +17,15 @@ class MainViewModel @Inject constructor(private  val taskDao: TaskDao) : ViewMod
     var description by mutableStateOf("")
     var isShowDialog by mutableStateOf(false)
     val tasks = taskDao.loadAllTasks().distinctUntilChanged()
+    private var editingTask: Task? = null
+    val isEditing: Boolean
+    get() = editingTask != null
+
+    fun setEditingTask(task: Task) {
+        editingTask = task
+        title = task.title
+        description = task.description
+    }
 
     fun createTask() {
         viewModelScope.launch {
@@ -31,5 +40,22 @@ class MainViewModel @Inject constructor(private  val taskDao: TaskDao) : ViewMod
             taskDao.deleteTask(task)
             Log.d(MainViewModel::class.simpleName, "success delete task")
         }
+    }
+
+    fun updateTask() {
+        editingTask?.let { task ->
+            viewModelScope.launch {
+                task.title = title
+                task.description = description
+                taskDao.updateTask(task)
+                Log.d(MainViewModel::class.simpleName, "success update task")
+            }
+        }
+    }
+
+    fun resetProperties() {
+        editingTask = null
+        title = ""
+        description = ""
     }
 }
